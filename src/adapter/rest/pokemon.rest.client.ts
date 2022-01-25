@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, Injectable } from "@nestjs/common";
 import { Pokemon } from "src/application/model/pokemon";
 import { PokemonRepository } from "src/application/port/out/pokemon.repository";
 import axios from "axios";
@@ -14,6 +14,11 @@ export class PokemonRestClient implements PokemonRepository {
         return axios
         .get(`${this.pokemonConfiguration.url}${name}`, { timeout: this.pokemonConfiguration.timeout })
         .then( response => new Pokemon(response.data.id, response.data.name))
+        .catch( error => { 
+            if (error.response.statusCode === 404)
+                throw new BadRequestException(name, `Pokemon ${name} not found`) 
+            throw new HttpException("There was an internal error", 500)
+        })
     }
     
 }
