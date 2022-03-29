@@ -15,7 +15,8 @@ export class PokemonRestClient implements PokemonRepository {
         .get(`${this.pokemonConfiguration.url}${name}`, { timeout: this.pokemonConfiguration.timeout })
         .then( response => new Pokemon(response.data.id, response.data.name))
         .catch( error => { 
-            if (error.response.statusCode === 404)
+            console.log(`Error with call`, error.status)
+            if (error.response.status === 404)
                 throw new BadRequestException(name, `Pokemon ${name} not found`) 
             throw new HttpException("There was an internal error", 500)
         })
